@@ -2,7 +2,7 @@
  This is my effort to implement Bifid cipher using Clojure.
 )
 
-(ns bifid.bifid
+(ns bifid
   (:gen-class))
 
 
@@ -12,7 +12,7 @@
   [charset square-size]
   (map #(vector %1 [%2 %3]) charset
     (for [x (range 1 (+ 1 square-size)), y (range 1 (+ 1 square-size))] x)
-    (take (count charset) (cycle (range 1 (+ 1 square-size))))))
+    (take (* square-size square-size) (cycle (range 1 (+ 1 square-size))))))
 
 
 (defn- letter-2-code
@@ -45,7 +45,9 @@
   (let [l2c (letter-2-code polybius-square)
         tr2l (transposed-2-letter polybius-square)]
     (apply str
-      (map #(get tr2l % %) (partition 2 (apply interleave (map #(get l2c % %) message)))))))
+      (map 
+        #(get tr2l % %)
+        (partition 2 (apply interleave (map #(get l2c % %) message)))))))
 
 (defn decode
   "Return the decoded message using the specified polybius-square"
@@ -61,7 +63,8 @@
   "A simple test case entry point"
   []
   (let [square (polybius-square "ABCDEFGHIKLMNOPQRSTUVWXYZ" 5)]
-    (do
-        (println (encode "PROGRAMMINGPRAXIS" square))
-        (println (decode "OMQNHHQWUIGBIMWCS" square)))))
+    (do (println (encode "BIFIDCIPHER" square))
+      (println (decode (encode "BIFIDCIPHER" square) square)))))
+  
+
 
